@@ -33,3 +33,4 @@ def test_random_prediction():
                                                 })
     assert response.status_code == 200
     assert response.json()['worldwide_gross'] >= 0 
+    #comment for test omega
