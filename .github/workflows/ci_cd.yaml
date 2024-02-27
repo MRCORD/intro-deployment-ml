@@ -35,15 +35,11 @@ jobs:
           version: 'latest'
           install_components: 'kubectl'
 
-      - name: Build and Push Docker Image
+      - name: Build and Push
         run: |
-          docker build . -t $REGISTRY_NAME:${{ github.sha }}
-          docker tag $REGISTRY_NAME:${{ github.sha }} $REGISTRY_NAME:latest
-          docker push $REGISTRY_NAME:${{ github.sha }}
-          docker push $REGISTRY_NAME:latest
-        env:
-          REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
-
+          docker build . -t $REGISTRY_NAME:$GITHUB_SHA
+          gcloud auth configure-docker -q
+          sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
       - name: Deploy to Cloud Run
         run: |
-          gcloud run services update ${{ secrets.SERVICE_NAME }} --region=${{ secrets.REGION }} --image=${{ secrets.REGISTRY_NAME }}:${{ github.sha }}
+          gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA
