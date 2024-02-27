@@ -21,8 +21,11 @@ jobs:
         
       - name: Set environment and bring the model
         run: |
-          pip install dvc-gs
-          python utilities/setter.py
+          pip3 install virtualenv
+          virtualenv venv
+          source venv/bin/activate
+          pip install dvc[gs]
+          export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
           dvc pull model/model.pkl.dvc -r model-tracker
 
       - name: Set up GCLOUD SDK
