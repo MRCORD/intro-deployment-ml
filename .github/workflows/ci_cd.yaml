@@ -1,0 +1,72 @@
+name: Continuous Integration/Continuous Deployment
+on: 
+  push:
+     branches:
+      - main 
+  workflow_run:
+    workflows: ["Continuous Training"]
+    branches: [main]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why to run this?
+        required: false
+        default: running CI/CD
+
+jobs:
+  ci_cd:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
+      REGION: ${{ secrets.REGION }}
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+      SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+    steps:
+      - name: Update Node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        
+      - name: Set environment and bring the model
+        run: |
+          pip3 install virtualenv
+          virtualenv venv
+          source venv/bin/activate
+          pip install dvc[gs]
+          export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
+          dvc pull model/model.pkl.dvc -r model-tracker
+
+      - name: Authenticate Google Cloud SDK
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          create_credentials_file: true
+          export_environment_variables: true
+          cleanup_credentials: true
+          access_token_lifetime: 3600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          retries: 3
+          backoff: 250
+          id_token_include_email: false
+
+      - name: Set up GCLOUD SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          version: 'latest'
+          install_components: 'kubectl'
+
+      - name: Build and Push
+        run: |
+          docker build . -t $REGISTRY_NAME:$GITHUB_SHA
+          gcloud auth configure-docker -q
+          sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA

@@ -1,0 +1,10 @@
+.DS_Store
+MLprod/
+.ipynb_checkpoints/
+*.json
+*.csv
+*.pkl
+report.txt
+*.png
+dataset/full_data.csv
+__pycache__/
