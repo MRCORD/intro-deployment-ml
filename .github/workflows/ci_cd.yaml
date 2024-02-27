@@ -21,11 +21,8 @@ jobs:
         
       - name: Set environment and bring the model
         run: |
-          pip3 install virtualenv
-          virtualenv venv
-          source venv/bin/activate
           pip install dvc-gs
-          export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
+          python utilities/setter.py
           dvc pull model/model.pkl.dvc -r model-tracker
 
       - name: Set up GCLOUD SDK
@@ -38,8 +35,8 @@ jobs:
       - name: Build and Push
         run: |
           docker build . -t $REGISTRY_NAME:$GITHUB_SHA
-          gcloud auth configure-docker -q
-          sudo -u $USER docker push $REGISTRY_NAME:$GITHUB_SHA
+          docker push $REGISTRY_NAME:$GITHUB_SHA
+
       - name: Deploy to Cloud Run
         run: |
           gcloud run services update $SERVICE_NAME --region=$REGION --image=$REGISTRY_NAME:$GITHUB_SHA
