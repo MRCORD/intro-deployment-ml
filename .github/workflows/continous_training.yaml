@@ -46,14 +46,14 @@ jobs:
       
       - uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets._github_token }}
           branch: ${{ github.ref }}
 
       - uses: iterative/setup-cml@v2
 
       - name: Push metrics
         env:
-          REPO_TOKEN: ${{ secrets.github_token }}
+          REPO_TOKEN: ${{ secrets._github_token }}
         run: |
           cat report.txt >> report.md 
           echo "![](./prediction_behavior.png)" >> report.md
