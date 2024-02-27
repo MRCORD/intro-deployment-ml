@@ -13,8 +13,6 @@ on:
         required: false
         default: running CT
 
-permissions: write-all
-
 jobs:
   continuous-training:
     runs-on: ubuntu-latest
