@@ -6,4 +6,5 @@ MLprod/
 *.pkl
 report.txt
 *.png
+dataset/full_data.csv
 __pycache__/
