@@ -39,8 +39,8 @@ jobs:
 
       - name: Commit .dvc file changes
         run: |
-          git config --local user.email "gmail.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
           git add model/model.pkl.dvc
           git commit -m "Updating model serialization"
       
@@ -53,8 +53,8 @@ jobs:
 
       - name: Push metrics
         env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat report.txt >> report.md 
           echo "![](./prediction_behavior.png)" >> report.md
-          cml comment create --publish report.md```
+          cml comment create --publish report.md
