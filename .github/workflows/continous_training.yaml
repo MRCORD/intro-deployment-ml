@@ -62,4 +62,4 @@ jobs:
         run: |
           cat report.txt >> report.md 
           echo "![](./prediction_behavior.png)" >> report.md
-          cml comment create --repo-token=$GITHUB_TOKEN report.md
+          cml comment create --token=$GITHUB_TOKEN report.md
