@@ -28,13 +28,10 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
           dvc pull model/model.pkl.dvc -r model-tracker
 
-      - name: Decode service account key
-        run: echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" | base64 -d > key.json
-
       - name: Authenticate Google Cloud SDK
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: key.json
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
           create_credentials_file: true
           export_environment_variables: true
           cleanup_credentials: true
