@@ -58,8 +58,8 @@ jobs:
 
       - name: Push metrics
         env:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Using the GITHUB_TOKEN secret
         run: |
           cat report.txt >> report.md 
           echo "![](./prediction_behavior.png)" >> report.md
-          cml comment create report.md
+          cml comment create --repo-token=$GITHUB_TOKEN report.md
