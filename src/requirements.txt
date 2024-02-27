@@ -4,3 +4,4 @@ matplotlib
 seaborn==0.11.2
 dvc
 dvc-gs
+fsspec==2022.11.0
