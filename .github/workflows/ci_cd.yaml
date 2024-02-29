@@ -40,7 +40,7 @@ jobs:
           source venv/bin/activate
           pip install dvc[gs]
           export GOOGLE_APPLICATION_CREDENTIALS=$(python utilities/setter.py)
-          dvc pull model/model.pkl.dvc -r model-tracker
+          dvc pull model/model.pkl.dvc -r model-tracker --force
 
       - name: Authenticate Google Cloud SDK
         uses: google-github-actions/auth@v1
